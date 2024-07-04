@@ -31,7 +31,7 @@ use eframe::egui;
 use egui_file_dialog::FileDialog;
 
 struct MyApp {
-    file_dialog: FileDialog,
+    file_dialog  : FileDialog,
     selected_file: Option<PathBuf>,
 }
 
@@ -47,7 +47,7 @@ impl MyApp {
 impl eframe::App for MyApp {
     fn update(
         &mut self,
-        ctx: &egui::Context,
+        ctx   : &egui::Context,
         _frame: &mut eframe::Frame
     ) {
         egui::CentralPanel::default().show(ctx, |ui| {
@@ -69,7 +69,7 @@ impl eframe::App for MyApp {
 
 fn main() -> eframe::Result<()> {
     eframe::run_native(
-        "File dialog demo",
+        "File dialog test",
         eframe::NativeOptions::default(),
         Box::new(
             |ctx| Ok(
