@@ -30,19 +30,39 @@ use std::path::PathBuf;
 use eframe::egui;
 use egui_file_dialog::FileDialog;
 
+use rfd::FileDialog as RFDFileDialog;
+
 struct MyApp {
-    file_dialog  : FileDialog,
-    selected_file: Option<PathBuf>,
+    file_dialog   : FileDialog,
+    selected_files: Option<Vec<PathBuf>>,
 }
 
 impl MyApp {
     pub fn new(_cc: &eframe::CreationContext<'_>) -> Self {
         Self {
-            file_dialog: FileDialog::new(),
-            selected_file: None,
+            file_dialog   : FileDialog::new(),
+            selected_files: None,
         }
     }
 }
+
+
+
+fn rfd_open_file_dialog() {
+    let result = RFDFileDialog::new()
+    .set_directory("/path/to/initial/directory")
+    // .add_filter("Text files (*.txt),*.txt")
+    .set_title("Select Files")
+    .pick_files();
+
+    if let Some(file_list) = result {
+        println!("Selected files: {:?}", file_list);
+    } else {
+        println!("No files selected");
+    }
+}
+
+
 
 impl eframe::App for MyApp {
     fn update(
@@ -52,16 +72,20 @@ impl eframe::App for MyApp {
     ) {
         egui::CentralPanel::default().show(ctx, |ui| {
             if ui.button("Select file").clicked() {
-                self.file_dialog.select_file();
+                self.file_dialog.select_multiple();
             }
 
-            ui.label(format!("Selected file: {:?}", self.selected_file));
+            ui.label(format!("Selected file: {:?}", self.selected_files));
 
-            // Update the dialog
             self.file_dialog.update(ctx);
 
-            if let Some(path) = self.file_dialog.take_selected() {
-                self.selected_file = Some(path.to_path_buf());
+            if let Some(path_list) = self.file_dialog.take_selected_multiple() {
+                self.selected_files = Some(path_list);
+            }
+
+
+            if ui.button("RFD Select files").clicked() {
+                rfd_open_file_dialog();
             }
         });
     }
@@ -80,3 +104,4 @@ fn main() -> eframe::Result<()> {
         ),
     )
 }
+
